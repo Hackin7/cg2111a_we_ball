@@ -1,4 +1,3 @@
-
 void setup() {
   // put your setup code here, to run once:
   alexDiagonal = sqrt((ALEX_LENGTH * ALEX_LENGTH) + (ALEX_BREADTH *
@@ -14,36 +13,7 @@ void setup() {
   sei();
 }
 
-void handlePacket(TPacket *packet)
-{
-  switch(packet->packetType)
-  {
-    case PACKET_TYPE_COMMAND:
-      handleCommand(packet);
-      break;
-
-    case PACKET_TYPE_RESPONSE:
-      break;
-
-    case PACKET_TYPE_ERROR:
-      break;
-
-    case PACKET_TYPE_MESSAGE:
-      break;
-
-    case PACKET_TYPE_HELLO:
-      break;
-  }
-}
-
 void loop() {
-// Uncomment the code below for Step 2 of Activity 3 in Week 8 Studio 2
-
- //forward(0, 100);
-
-// Uncomment the code below for Week 9 Studio 2
-
-
  // put your main code here, to run repeatedly:
   TPacket recvPacket; // This holds commands from the Pi
 

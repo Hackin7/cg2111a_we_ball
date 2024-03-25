@@ -1,4 +1,4 @@
-
+/* --------------------------------------------------------------------------------*/
 // Clears all our counters
 void clearCounters()
 {
@@ -30,7 +30,7 @@ void initializeState()
   clearCounters();
 }
 
-
+/* --------------------------------------------------------------------------------*/
 // Functions to be called by INT2 and INT3 ISRs.
 void leftISR()
 {
@@ -67,4 +67,15 @@ void rightISR()
     rightReverseTicksTurns = (unsigned long) ((float) rightReverseTicks / COUNTS_PER_REV);
     dbprintf("rightReverseTicks: %d, rightReverseTicksTurns: %d", rightReverseTicks, rightReverseTicksTurns, "\n");
   }
+}
+
+/* --------------------------------------------------------------------------------*/
+// Enable pull up resistors on pins 18 and 19
+void enablePullups()
+{
+  // Use bare-metal to enable the pull-up resistors on pins
+  // 19 and 18. These are pins PD2 and PD3 respectively.
+  // We set bits 2 and 3 in DDRD to 0 to make them inputs. 
+  DDRD &= 0b11110011;
+  PORTD |= 0b00001100;
 }
