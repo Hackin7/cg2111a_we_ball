@@ -7,7 +7,7 @@
 #include "serialize.h"
 
 /* TODO: Set PORT_NAME to the port name of your Arduino */
-#define PORT_NAME			"/dev/ttyACM0"
+#define PORT_NAME			"/dev/ttyS0"
 /* END TODO */
 
 // Check and ensure that this baud rate is the same
