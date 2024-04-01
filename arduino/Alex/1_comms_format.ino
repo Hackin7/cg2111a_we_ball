@@ -193,3 +193,27 @@ void waitForHello()
           sendBadChecksum();
   } // !exit
 }
+
+
+
+void handlePacket(TPacket *packet)
+{
+  switch(packet->packetType)
+  {
+    case PACKET_TYPE_COMMAND:
+      handleCommand(packet);
+      break;
+
+    case PACKET_TYPE_RESPONSE:
+      break;
+
+    case PACKET_TYPE_ERROR:
+      break;
+
+    case PACKET_TYPE_MESSAGE:
+      break;
+
+    case PACKET_TYPE_HELLO:
+      break;
+  }
+}
