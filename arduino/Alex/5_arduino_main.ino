@@ -20,7 +20,7 @@ void loop() {
   TResult result = readPacket(&recvPacket);
   
   if(result == PACKET_OK){
-      handlePacket(&recvPacket);
+      handleCommand(&recvPacket);
   }else{
     if(result == PACKET_BAD)
     {
