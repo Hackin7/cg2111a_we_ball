@@ -160,6 +160,79 @@ void getParams(int32_t *params)
 	flushInput();
 }
 
+/* --- Keyboard Code --------------------------------------------------------------------- */
+#include <iostream>
+#include <termios.h>
+#include <unistd.h>
+using namespace std;
+
+void move(void *conn, char ch){
+	char buffer[10];
+	int32_t params[2];
+
+	//getParams(params);
+	params[0] = 0;
+	params[1] = 100;
+
+	buffer[0] = NET_COMMAND_PACKET;
+	buffer[1] = ch;
+	memcpy(&buffer[2], params, sizeof(params));
+	sendData(conn, buffer, sizeof(buffer));
+}
+void *keyboardControlThread(void *conn) {
+	// Get terminal settings
+    termios oldTermios, newTermios;
+    tcgetattr(STDIN_FILENO, &oldTermios);
+
+    // Set terminal to raw mode (no buffering)
+    newTermios = oldTermios;
+    newTermios.c_lflag &= ~ICANON;
+    newTermios.c_lflag &= ~ECHO;
+    tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
+
+
+	char ch;
+    while (true) {
+        ch = getchar();
+
+        switch (ch) {
+            case 'w':
+                move(conn, 'f');
+				break;
+
+            case 'a':
+                move(conn, 'l');
+				break;
+
+            case 's':
+                move(conn, 'b');
+				break;
+
+            case 'd':
+                move(conn, 'r');
+				break;
+            case 'x':
+                // Exit the program
+                cout << "Exiting..." << endl;
+                break;
+            default:
+                move(conn, 's');
+				break;
+        }
+
+        
+    }
+
+	// Restore terminal settings on exit
+	tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);
+	/* Stop the client loop and call EXIT_THREAD */
+    stopClient();
+    EXIT_THREAD(conn);
+    return NULL;
+}
+
+/* --------------------------------------------------------------------------------------- */
+
 void *writerThread(void *conn)
 {
 	int quit=0;
@@ -236,7 +309,8 @@ void *writerThread(void *conn)
 void connectToServer(const char *serverName, int portNum)
 {
     /* TODO: Create a new client */
-	createClient(serverName, portNum, 1, CA_CERT_FNAME, SERVER_NAME_ON_CERT, 1, CLIENT_CERT_FNAME, CLIENT_KEY_FNAME, readerThread, writerThread);
+	//createClient(serverName, portNum, 1, CA_CERT_FNAME, SERVER_NAME_ON_CERT, 1, CLIENT_CERT_FNAME, CLIENT_KEY_FNAME, readerThread, writerThread);
+	createClient(serverName, portNum, 1, CA_CERT_FNAME, SERVER_NAME_ON_CERT, 1, CLIENT_CERT_FNAME, CLIENT_KEY_FNAME, readerThread, keyboardControlThread);
     /* END TODO */
 }
 
