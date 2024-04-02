@@ -1,2 +1,3 @@
 .vscode
 server_rpi/tls-server-lib/keys/*
+client_pc/tls-client-lib/keys/*
