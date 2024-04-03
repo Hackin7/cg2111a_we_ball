@@ -29,10 +29,6 @@ int blueColor = 0;
   digitalWrite(S0,HIGH);
   digitalWrite(S1,LOW);
   
-  // Begins serial communication
-  Serial.begin(9600);
-  //
-  
   alexDiagonal = sqrt((ALEX_LENGTH * ALEX_LENGTH) + (ALEX_BREADTH *
     ALEX_BREADTH));
   alexCirc = PI * alexDiagonal;
