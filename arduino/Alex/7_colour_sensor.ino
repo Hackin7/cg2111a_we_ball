@@ -6,6 +6,7 @@
 // TCS230 or TCS3200 pins wiring to Arduino
 
 
+
 void colourSense() {
   // Setting RED (R) filtered photodiodes to be read
   digitalWrite(S2,LOW);
