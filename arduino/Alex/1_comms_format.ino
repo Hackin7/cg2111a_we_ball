@@ -161,10 +161,10 @@ void handleCommand(TPacket *command)
         clearOneCounter(command->params[0]);
         sendOK();
       break;
-	  case COMMAND_GET_COLOUR:
+    case COMMAND_GET_COLOUR:
 	  colourSense(command->params[0], command->params[1], command->params[2],command->params[3], command->params[4],command->params[5],command->params[6]);
 	  sendOK();
-	  break;
+      break;
     
     /*
      * Implement code for other commands here.
