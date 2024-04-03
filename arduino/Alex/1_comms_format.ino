@@ -64,6 +64,7 @@ void colourStatus()
 	dbprintf("Red frequency: %d, Red Colour: %d", redFrequency, redColour, "\n");
 	dbprintf("Blue frequency: %d, Blue Colour: %d", blueFrequency, blueColour, "\n");
 	dbprintf("Green frequency: %d, Green Colour: %d", greenFrequency, greenColour, "\n");
+	sendResponse(&colourPacket);
 }
 
 void sendMessage(const char *message)
