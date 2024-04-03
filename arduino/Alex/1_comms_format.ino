@@ -44,13 +44,13 @@ void colourStatus()
 {
 	TPacket colourPacket;
 	colourPacket.packettype = PACKET_TYPE_RESPONSE;
-	statusPacket.command = RESP_STATUS;
-	statusPacket.params[0] = redFrequency;
-	statusPacket.params[1] = redColour;
-	statusPacket.params[2] = blueFrequency;
-	statusPacket.params[3] = blueColour;
-	statusPacket.params[4] = greenFrequency;
-	statusPacket.params[5] = greenColour;
+	colourPacket.command = RESP_STATUS;
+	colourPacket.params[0] = redFrequency;
+	colourPacket.params[1] = redColour;
+	colurPacket.params[2] = blueFrequency;
+	colourPacket.params[3] = blueColour;
+	colourPacket.params[4] = greenFrequency;
+	colourPacket.params[5] = greenColour;
 	sendResponse(&colourPacket);
 	
 }
@@ -162,7 +162,7 @@ void handleCommand(TPacket *command)
         sendOK();
       break;
     case COMMAND_GET_COLOUR:
-	  colourSense(command->params[0], command->params[1], command->params[2],command->params[3], command->params[4],command->params[5],command->params[6]);
+	  colourPrint((float)command->params[0], (float)command->params[1], (float)command->params[2], (float)command->params[3], (float)command->params[4], (float)command->params[5],(float)command->params[6]);
 	  sendOK();
       break;
     
