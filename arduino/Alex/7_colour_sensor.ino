@@ -20,8 +20,7 @@ void colourSense() {
   redColor = map(redFrequency, XX, XX, 255,0);
   
   // Printing the RED (R) value
-  Serial.print("R = ");
-  Serial.print(redColor);
+
   delay(100);
   
   // Setting GREEN (G) filtered photodiodes to be read
@@ -36,8 +35,7 @@ void colourSense() {
   greenColor = map(greenFrequency, XX, XX, 255, 0);
   
   // Printing the GREEN (G) value  
-  Serial.print(" G = ");
-  Serial.print(greenColor);
+
   delay(100);
  
   // Setting BLUE (B) filtered photodiodes to be read
@@ -52,19 +50,9 @@ void colourSense() {
   blueColor = map(blueFrequency, XX, XX, 255, 0);
   
   // Printing the BLUE (B) value 
-  Serial.print(" B = ");
-  Serial.print(blueColor);
-  delay(100);
+
 
   // Checks the current detected color and prints
   // a message in the serial monitor
-  if(redColor > greenColor && redColor > blueColor){
-      Serial.println(" - RED detected!");
-  }
-  if(greenColor > redColor && greenColor > blueColor){
-    Serial.println(" - GREEN detected!");
-  }
-  if(blueColor > redColor && blueColor > greenColor){
-    Serial.println(" - BLUE detected!");
-  }
+
 }
