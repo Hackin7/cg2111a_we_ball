@@ -292,6 +292,7 @@ void handleNetworkData(void *conn, const char *buffer, int len)
 
         tls_conn = conn; // This is used by sendNetworkData
 
+  printf("received network data, %.*s\n",len,buffer);
 	if(buffer[0] == NET_COMMAND_PACKET)
 		handleCommand(conn, buffer);
 }
@@ -302,22 +303,28 @@ void *worker(void *conn)
 
 	char buffer[BUF_LEN];
 	
+  printf("Worker thread started\n");
+  networkActive = 1;
 	while(networkActive)
 	{
+    printf("Doing SSL Read\n");
 		/* TODO: Implement SSL read into buffer */
     len = sslRead(conn, buffer, sizeof(buffer));
     
 		/* END TODO */
 		// As long as we are getting data, network is active
 		networkActive=(len > 0);
-
-		if(len > 0)
+    printf("sslReaded?\n");
+		if(len > 0){
+      printf("received network data\n");
 			handleNetworkData(conn, buffer, len);
-		else
+		}else{
 			if(len < 0)
 				perror("ERROR READING NETWORK: ");
+    }
 	}
 
+  printf("exiting\n");
     // Reset tls_conn to NULL.
     tls_conn = NULL;
     EXIT_THREAD(conn);

@@ -40,6 +40,33 @@ void sendStatus()
 
 }
 
+void colourStatus()
+{
+	TPacket colourPacket;
+	colourPacket.packettype = PACKET_TYPE_RESPONSE;
+	colourPacket.command = RESP_STATUS;
+	colourPacket.params[0] = redFrequency;
+	colourPacket.params[1] = redColour;
+	colurPacket.params[2] = blueFrequency;
+	colourPacket.params[3] = blueColour;
+	colourPacket.params[4] = greenFrequency;
+	colourPacket.params[5] = greenColour;
+	// insert dbprintf //
+/*	sendResponse(&colourPacket);
+	  Serial.print(" G = ");
+  Serial.print(greenColor);
+	  Serial.print(" B = ");
+  Serial.print(blueColor);
+  delay(100);
+	  Serial.print("R = ");
+  Serial.print(redColor);
+	*/
+	dbprintf("Red frequency: %d, Red Colour: %d", redFrequency, redColour, "\n");
+	dbprintf("Blue frequency: %d, Blue Colour: %d", blueFrequency, blueColour, "\n");
+	dbprintf("Green frequency: %d, Green Colour: %d", greenFrequency, greenColour, "\n");
+	sendResponse(&colourPacket);
+}
+
 void sendMessage(const char *message)
 {
   // Sends text messages back to the Pi. Useful
@@ -145,6 +172,11 @@ void handleCommand(TPacket *command)
     case COMMAND_CLEAR_STATS:
         clearOneCounter(command->params[0]);
         sendOK();
+      break;
+    case COMMAND_GET_COLOUR:
+	  colourSense();
+	  colourStatus();
+	  sendOK();
       break;
     
     /*

@@ -4,9 +4,9 @@
 #include <stdio.h>
 
 #define PORTNUM 5001
-#define KEY_FNAME   "alex.key"
-#define CERT_FNAME  "alex.crt"
-#define CA_CERT_FNAME   "signing.pem"
+#define KEY_FNAME   "keys/alex.key"
+#define CERT_FNAME  "keys/alex.crt"
+#define CA_CERT_FNAME   "keys/signing.pem"
 #define CLIENT_NAME     "laptop.cg2111a.we.ball.com"
 
 
