@@ -65,6 +65,16 @@ volatile unsigned long targetTicks=10;
 volatile double leftDistance;
 volatile double rightDistance;
 
+
+// Variables to keep track of colour detected by colour sensor
+volatile unsigned long redFrequency;
+volatile unsigned long redColour;
+volatile unsigned long blueFrequency;
+volatile unsigned long blueColour;
+volatile unsigned long greenFrequency;
+volatile unsigned long greenColour;
+
+
 /* --------------------------------------------------------------------------------*/
 // This function needs to be here if not it'll throw an error
 TResult readPacket(TPacket *packet) 
