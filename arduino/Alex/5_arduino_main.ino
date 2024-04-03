@@ -13,8 +13,12 @@ void setup() {
   sei();
 }
 
+
+
 void loop() {
- // put your main code here, to run repeatedly:
+
+  //motorDebug();
+  // put your main code here, to run repeatedly:
   TPacket recvPacket; // This holds commands from the Pi
 
   TResult result = readPacket(&recvPacket);

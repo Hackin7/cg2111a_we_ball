@@ -11,6 +11,22 @@ AF_DCMotor motorFR(FRONT_RIGHT);
 AF_DCMotor motorBL(BACK_LEFT);
 AF_DCMotor motorBR(BACK_RIGHT);
 
+void motorDebug() {
+
+  int speed_scaled = (100.0/100.0) * 255;
+  motorFL.setSpeed(speed_scaled);
+  motorFR.setSpeed(speed_scaled);
+  motorBL.setSpeed(speed_scaled);
+  motorBR.setSpeed(speed_scaled);
+
+	motorFL.run(BACKWARD);
+        motorFR.run(FORWARD);
+        motorBL.run(FORWARD);
+        motorBR.run(BACKWARD);
+  while (1) {}
+}
+
+
 void move(float speed, int direction)
 {
   int speed_scaled = (speed/100.0) * 255;
