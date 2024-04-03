@@ -40,6 +40,21 @@ void sendStatus()
 
 }
 
+void colourStatus()
+{
+	TPacket colourPacket;
+	colourPacket.packettype = PACKET_TYPE_RESPONSE;
+	statusPacket.command = RESP_STATUS;
+	statusPacket.params[0] = redFrequency;
+	statusPacket.params[1] = redColour;
+	statusPacket.params[2] = blueFrequency;
+	statusPacket.params[3] = blueColour;
+	statusPacket.params[4] = greenFrequency;
+	statusPacket.params[5] = greenColour;
+	sendResponse(&colourPacket);
+	
+}
+
 void sendMessage(const char *message)
 {
   // Sends text messages back to the Pi. Useful
