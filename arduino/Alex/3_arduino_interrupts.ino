@@ -15,6 +15,10 @@ ISR(INT3_vect)
   leftISR();
 }
 
+ISR()
+{
+  colourSense();
+}
 
 // Set up the external interrupt pins INT2 and INT3
 // for falling edge triggered. Use bare-metal.
