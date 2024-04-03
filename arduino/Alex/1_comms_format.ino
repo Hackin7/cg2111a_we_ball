@@ -52,8 +52,18 @@ void colourStatus()
 	colourPacket.params[4] = greenFrequency;
 	colourPacket.params[5] = greenColour;
 	// insert dbprintf //
-	sendResponse(&colourPacket);
-	
+/*	sendResponse(&colourPacket);
+	  Serial.print(" G = ");
+  Serial.print(greenColor);
+	  Serial.print(" B = ");
+  Serial.print(blueColor);
+  delay(100);
+	  Serial.print("R = ");
+  Serial.print(redColor);
+	*/
+	dbprintf("Red frequency: %d, Red Colour: %d", redFrequency, redColour, "\n");
+	dbprintf("Blue frequency: %d, Blue Colour: %d", blueFrequency, blueColour, "\n");
+	dbprintf("Green frequency: %d, Green Colour: %d", greenFrequency, greenColour, "\n");
 }
 
 void sendMessage(const char *message)
