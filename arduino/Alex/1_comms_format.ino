@@ -51,6 +51,7 @@ void colourStatus()
 	colourPacket.params[3] = blueColour;
 	colourPacket.params[4] = greenFrequency;
 	colourPacket.params[5] = greenColour;
+	// insert dbprintf //
 	sendResponse(&colourPacket);
 	
 }
@@ -162,7 +163,8 @@ void handleCommand(TPacket *command)
         sendOK();
       break;
     case COMMAND_GET_COLOUR:
-	  colourPrint((float)command->params[0], (float)command->params[1], (float)command->params[2], (float)command->params[3], (float)command->params[4], (float)command->params[5],(float)command->params[6]);
+	  colourSense();
+	  colourStatus();
 	  sendOK();
       break;
     
