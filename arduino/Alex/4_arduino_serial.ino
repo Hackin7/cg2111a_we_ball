@@ -26,6 +26,7 @@ void startSerial()
 // ch if available. Also returns TRUE if ch is valid. 
 // This will be replaced later with bare-metal code.
 
+
 int readSerial(char *buffer)
 {
 
@@ -47,3 +48,22 @@ void writeSerial(const char *buffer, int len)
   Serial.write(buffer, len);
   // Change Serial to Serial2/Serial3/Serial4 in later labs when using other UARTs
 }
+
+
+// USART Interrupt Version below
+
+void setupSerial()
+{
+  UCSR0C = 0b00000110;
+  UBRR0H = 0;
+  UBRR0L = 103;
+  UCSR0A = 0;
+}
+
+ISR(USART_RX_vect)
+{
+  unsigned char data = UDR0;
+  writeBuffer(&_recvBuffer, data);
+}
+
+int hear(unsigned char )

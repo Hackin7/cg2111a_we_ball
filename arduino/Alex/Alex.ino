@@ -65,6 +65,9 @@ volatile unsigned long targetTicks=10;
 volatile double leftDistance;
 volatile double rightDistance;
 
+// universal buffers for interrupt-based USART communication
+char _recvBuffer, _xmitBuffer;
+
 /* --------------------------------------------------------------------------------*/
 // This function needs to be here if not it'll throw an error
 TResult readPacket(TPacket *packet) 
