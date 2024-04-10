@@ -52,7 +52,9 @@ void writeSerial(const char *buffer, int len)
 
 // USART Interrupt Version below
 
-void setupSerial()
+#define UDRIEMASK   0b00100000
+
+void setupUART()
 {
   UCSR0C = 0b00000110;
   UBRR0H = 0;
@@ -60,10 +62,20 @@ void setupSerial()
   UCSR0A = 0;
 }
 
-ISR(USART_RX_vect)
+void startUART()
 {
-  unsigned char data = UDR0;
-  writeBuffer(&_recvBuffer, data);
+  UCSR0B = 0b10111000;
 }
 
-int hear(unsigned char )
+ISR(USART_RX_vect)
+{
+  // receive data
+  _recvBuffer = UDR0;
+}
+
+ISR(USART_UDRE_vect)
+{
+  // send data
+  UDR0 = _xmitBuffer;
+  UCSR0B &= ~UDRIEMASK;
+}
