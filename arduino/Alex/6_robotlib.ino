@@ -54,8 +54,22 @@ void move(float speed, int direction)
     }
 }
 
+void timersFailsave(TDirection setDir, int moveDir, int time, float speed){
+    dir = (TDirection) setDir;
+    move(speed, moveDir);
+    delay(time);
+    stop();
+}
+ 
+
 void forward(float dist, float speed)
 {
+  // failsafe - Timers
+  if (dist > 1000) {
+    timersFailsave(FORWARD, FORWARD, dist-1000, speed);
+    return;
+  }
+  
   if(dist > 0) {
       deltaDist = dist;
   } else {
@@ -69,6 +83,12 @@ void forward(float dist, float speed)
 
 void backward(float dist, float speed)
 {
+  // failsafe - Timers
+  if (dist > 1000) {
+    timersFailsave(BACKWARD, BACKWARD, dist-1000, speed);
+    return;
+  }
+  
   if(dist > 0) {
       deltaDist = dist;
   } else {
@@ -79,6 +99,45 @@ void backward(float dist, float speed)
   dir = (TDirection) BACKWARD;
   move(speed, BACKWARD);
 }
+
+
+
+void left(float ang, float speed) {
+  // failsafe - Timers
+  if (ang > 1000) {
+    timersFailsave(LEFT, CCW, ang-1000, speed);
+    return;
+  }
+  
+  if(ang == 0) {
+      deltaTicks=99999999;
+  } else {
+      deltaTicks=computeDeltaTicks(ang);
+  }
+  targetTicks = leftReverseTicksTurns + deltaTicks;
+  dbprintf("left targetTicks: %d %d", deltaTicks, targetTicks, "\n");
+  
+  ccw(ang, speed);
+}
+
+void right(float ang, float speed) {
+  // failsafe - Timers
+  if (ang > 1000) {
+    timersFailsave(RIGHT, CW, ang-1000, speed);
+    return;
+  }
+  
+  if(ang == 0) {
+      deltaTicks=99999999;
+  } else {
+      deltaTicks=computeDeltaTicks(ang);
+  }
+  targetTicks = rightReverseTicksTurns + deltaTicks;
+  dbprintf("right targetTicks: %d %d", deltaTicks, targetTicks, "\n");
+  
+  cw(ang, speed);
+}
+
 
 void ccw(float dist, float speed)
 {
