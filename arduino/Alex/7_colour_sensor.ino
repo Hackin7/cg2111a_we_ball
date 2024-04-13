@@ -16,8 +16,8 @@ void colourSense() {
   redFrequency = pulseIn(sensorOut, LOW);
   // Remaping the value of the RED (R) frequency from 0 to 255
   // You must replace with your own values. Here's an example: 
-  // redColor = map(redFrequency, 70, 120, 255,0);
-  redColor = map(redFrequency, XX, XX, 255,0);
+   redColor = map(redFrequency, 70, 120, 255,0);
+  // redColor = map(redFrequency, XX, XX, 255,0);
   
   // Printing the RED (R) value
 
@@ -31,8 +31,8 @@ void colourSense() {
   greenFrequency = pulseIn(sensorOut, LOW);
   // Remaping the value of the GREEN (G) frequency from 0 to 255
   // You must replace with your own values. Here's an example: 
-  // greenColor = map(greenFrequency, 100, 199, 255, 0);
-  greenColor = map(greenFrequency, XX, XX, 255, 0);
+  greenColor = map(greenFrequency, 100, 199, 255, 0);
+  // greenColor = map(greenFrequency, XX, XX, 255, 0);
   
   // Printing the GREEN (G) value  
 
@@ -46,11 +46,16 @@ void colourSense() {
   blueFrequency = pulseIn(sensorOut, LOW);
   // Remaping the value of the BLUE (B) frequency from 0 to 255
   // You must replace with your own values. Here's an example: 
-  // blueColor = map(blueFrequency, 38, 84, 255, 0);
-  blueColor = map(blueFrequency, XX, XX, 255, 0);
+   blueColor = map(blueFrequency, 38, 84, 255, 0);
+  // blueColor = map(blueFrequency, XX, XX, 255, 0);
   
-  // Printing the BLUE (B) value 
-
+  // Printing the BLUE (B) value
+  
+  lcd.setCursor(0, 0);
+  lcd.print("R="+ String(redFrequency) + " ");  
+  lcd.println("G="+String(greenFrequency)+" ");
+  lcd.setCursor(0, 1);  
+  lcd.print("B="+String(blueFrequency));
 
   // Checks the current detected color and prints
   // a message in the serial monitor

@@ -43,14 +43,14 @@ void sendStatus()
 void colourStatus()
 {
 	TPacket colourPacket;
-	colourPacket.packettype = PACKET_TYPE_RESPONSE;
+	colourPacket.packetType = PACKET_TYPE_RESPONSE;
 	colourPacket.command = RESP_STATUS;
 	colourPacket.params[0] = redFrequency;
-	colourPacket.params[1] = redColour;
-	colurPacket.params[2] = blueFrequency;
-	colourPacket.params[3] = blueColour;
+	colourPacket.params[1] = redColor;
+	colourPacket.params[2] = blueFrequency;
+	colourPacket.params[3] = blueColor;
 	colourPacket.params[4] = greenFrequency;
-	colourPacket.params[5] = greenColour;
+	colourPacket.params[5] = greenColor;
 	// insert dbprintf //
 /*	sendResponse(&colourPacket);
 	  Serial.print(" G = ");
@@ -61,9 +61,9 @@ void colourStatus()
 	  Serial.print("R = ");
   Serial.print(redColor);
 	*/
-	dbprintf("Red frequency: %d, Red Colour: %d", redFrequency, redColour, "\n");
-	dbprintf("Blue frequency: %d, Blue Colour: %d", blueFrequency, blueColour, "\n");
-	dbprintf("Green frequency: %d, Green Colour: %d", greenFrequency, greenColour, "\n");
+	dbprintf("Red frequency: %d, Red Colour: %d\n", redFrequency, redColor);
+	dbprintf("Blue frequency: %d, Blue Colour: %d\n", blueFrequency, blueColor);
+	dbprintf("Green frequency: %d, Green Colour: %d\n", greenFrequency, greenColor);
 	sendResponse(&colourPacket);
 }
 
@@ -142,42 +142,56 @@ void sendResponse(TPacket *packet)
 /* --------------------------------------------------------------------------------*/
 void handleCommand(TPacket *command)
 {
+  //lcd.clear();
+  lcd.setCursor(9, 0);
+  //lcd.print("Command: ");  
+  
+  //lcd.println("G="+String(greenFrequency)+" ");
+  //lcd.setCursor(0, 1);  
+  //lcd.print("B="+String(blueFrequency));
+  
   switch(command->command)
   {
     // For movement commands, param[0] = distance, param[1] = speed.
     case COMMAND_FORWARD:
+        sendOK();
+        lcd.print("Forward"); 
         forward((float) command->params[0], (float) command->params[1]);
-        sendOK();
-      break;
+        break;
     case COMMAND_REVERSE:
+        sendOK();
+        lcd.print("Reverse"); 
         backward((float) command->params[0], (float) command->params[1]);
-        sendOK();
-      break;
+        break;
     case COMMAND_TURN_LEFT:
+        sendOK();
+        lcd.print("Left"); 
         left((float) command->params[0], (float) command->params[1]);
-        sendOK();
-      break;
+        break;
     case COMMAND_TURN_RIGHT:
-	    right((float) command->params[0], (float) command->params[1]);
         sendOK();
-      break;
+        lcd.print("Right"); 
+	      right((float) command->params[0], (float) command->params[1]);
+        break;
     case COMMAND_STOP:
+        sendOK();
+        lcd.print("Stop"); 
         stop();
-        sendOK();
-      break;
+        break;
     case COMMAND_GET_STATS:
+        sendOK();
         sendStatus();
-        sendOK();
-      break;
+        //sendOK();
+        //break;
+        //case COMMAND_GET_COLOUR:
+  	    colourSense();
+  	    colourStatus();
+        //ultrasonicSensor();
+        break;
     case COMMAND_CLEAR_STATS:
-        clearOneCounter(command->params[0]);
         sendOK();
-      break;
-    case COMMAND_GET_COLOUR:
-	  colourSense();
-	  colourStatus();
-	  sendOK();
-      break;
+        clearOneCounter(command->params[0]);
+        break;
     
     /*
      * Implement code for other commands here.
@@ -185,7 +199,8 @@ void handleCommand(TPacket *command)
      */
         
     default:
-      sendBadCommand();
+        lcd.print("how like tis"); 
+        sendBadCommand();
   }
 }
 
@@ -227,9 +242,9 @@ void waitForHello()
 }
 
 
-
+// Not even running
 void handlePacket(TPacket *packet)
-{
+{ 
   switch(packet->packetType)
   {
     case PACKET_TYPE_COMMAND:
