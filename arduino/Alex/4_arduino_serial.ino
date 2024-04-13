@@ -26,6 +26,7 @@ void startSerial()
 // ch if available. Also returns TRUE if ch is valid. 
 // This will be replaced later with bare-metal code.
 
+
 int readSerial(char *buffer)
 {
 
@@ -35,7 +36,8 @@ int readSerial(char *buffer)
 
   while(Serial.available())
     buffer[count++] = Serial.read();
-
+  
+  // LCD Code
   if (count > 0) {
     lcd.clear();
     lcd.print("Received");
@@ -53,7 +55,7 @@ int readSerial(char *buffer)
       lcd.print(buffer[3], HEX);
     }
   }
-
+  
   return count;
 }
 
@@ -66,6 +68,33 @@ void writeSerial(const char *buffer, int len)
   // Change Serial to Serial2/Serial3/Serial4 in later labs when using other UARTs
 }
 
-void clearSerialRxBuffer(){
-  //Serial.begin(9600);
+
+// USART Interrupt Version below
+
+#define UDRIEMASK   0b00100000
+
+void setupUART()
+{
+  UCSR0C = 0b00000110;
+  UBRR0H = 0;
+  UBRR0L = 103;
+  UCSR0A = 0;
+}
+
+void startUART()
+{
+  UCSR0B = 0b10111000;
+}
+
+ISR(USART_RX_vect)
+{
+  // receive data
+  _recvBuffer = UDR0;
+}
+
+ISR(USART_UDRE_vect)
+{
+  // send data
+  UDR0 = _xmitBuffer;
+  UCSR0B &= ~UDRIEMASK;
 }
