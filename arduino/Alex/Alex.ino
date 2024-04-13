@@ -1,4 +1,4 @@
-#include <serialize.h>
+#include "serialize.h"
 #include "packet.h"
 #include "constants.h"
 #include <stdarg.h>
@@ -65,8 +65,15 @@ volatile unsigned long targetTicks=10;
 volatile double leftDistance;
 volatile double rightDistance;
 
-// universal buffers for interrupt-based USART communication
-char _recvBuffer, _xmitBuffer;
+
+// Variables to keep track of colour detected by colour sensor
+volatile unsigned long redFrequency;
+volatile unsigned long redColor;
+volatile unsigned long blueFrequency;
+volatile unsigned long blueColor;
+volatile unsigned long greenFrequency;
+volatile unsigned long greenColor;
+
 
 /* --------------------------------------------------------------------------------*/
 // This function needs to be here if not it'll throw an error
@@ -86,3 +93,31 @@ TResult readPacket(TPacket *packet)
     else
       return deserialize(buffer, len, packet);
 }
+
+/* --- I2C LCD ---------------------------------------------------------------- */
+#include  <Wire.h>
+#include  <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27,20,4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
+
+void lcdInit() {
+  lcd.init();                      // initialize the lcd 
+  lcd.backlight();
+}
+
+/*
+void test()
+{
+  // when characters arrive over the serial port...
+  if (Serial.available()) {
+    // wait a bit for the entire message to arrive
+    delay(100);
+    // clear the screen
+    lcd.clear();
+    // read all the available characters
+    while (Serial.available() > 0) {
+      // display each character to the LCD
+      lcd.write(Serial.read());
+    }
+  }
+}
+*/

@@ -37,19 +37,19 @@ void leftISR()
   if (dir == FORWARD){
     leftForwardTicks++;
     forwardDist = (unsigned long) ((float) leftForwardTicks / COUNTS_PER_REV * WHEEL_CIRC);
-    dbprintf("Forwards: %d", forwardDist, "\n");
+    //dbprintf("Forwards: %d", forwardDist, "\n");
   } else if (dir == BACKWARD) {
     leftReverseTicks++;
     reverseDist = (unsigned long) ((float) leftReverseTicks / COUNTS_PER_REV * WHEEL_CIRC);
-    dbprintf("Reverse: %d", reverseDist, "\n");
+    //dbprintf("Reverse: %d", reverseDist, "\n");
   } else if (dir == LEFT) {
     leftReverseTicks++;
     leftReverseTicksTurns = (unsigned long) ((float) leftReverseTicks / COUNTS_PER_REV);
-    dbprintf("leftReverseTicks: %d, leftReverseTicksTurns: %d", leftReverseTicks, leftReverseTicksTurns, "\n");
+    //dbprintf("leftReverseTicks: %d, leftReverseTicksTurns: %d", leftReverseTicks, leftReverseTicksTurns, "\n");
   } else if (dir == RIGHT) {
     leftForwardTicks++;
     leftForwardTicksTurns = (unsigned long) ((float) leftForwardTicks / COUNTS_PER_REV);
-    dbprintf("leftForwardTicks: %d, leftForwardTicksTurns:  %d", leftForwardTicks, leftForwardTicksTurns, "\n");
+    //dbprintf("leftForwardTicks: %d, leftForwardTicksTurns:  %d", leftForwardTicks, leftForwardTicksTurns, "\n");
   }
 }
 
@@ -65,7 +65,7 @@ void rightISR()
   } else if (dir == RIGHT) {
     rightReverseTicks++;
     rightReverseTicksTurns = (unsigned long) ((float) rightReverseTicks / COUNTS_PER_REV);
-    dbprintf("rightReverseTicks: %d, rightReverseTicksTurns: %d", rightReverseTicks, rightReverseTicksTurns, "\n");
+    //dbprintf("rightReverseTicks: %d, rightReverseTicksTurns: %d", rightReverseTicks, rightReverseTicksTurns, "\n");
   }
 }
 

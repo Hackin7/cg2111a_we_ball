@@ -141,3 +141,16 @@ void endSerial()
 	if(_fd > 0)
 		close(_fd);
 }
+
+// My custom code lmao ////////////////////////////////////////
+// https://stackoverflow.com/questions/22018281/unix-how-to-clear-the-serial-port-i-o-buffer
+
+void clearSerialReceive(){
+  ioctl(_fd, TCFLSH, 0); 
+}
+void clearSerialTransmit(){
+  ioctl(_fd, TCFLSH, 1); 
+}
+void clearSerial(){
+  ioctl(_fd, TCFLSH, 2); // flush both
+}

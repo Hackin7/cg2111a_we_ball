@@ -36,7 +36,26 @@ int readSerial(char *buffer)
 
   while(Serial.available())
     buffer[count++] = Serial.read();
-
+  
+  // LCD Code
+  if (count > 0) {
+    lcd.clear();
+    lcd.print("Received");
+    lcd.setCursor(0,1);
+    if (count >= 0) {
+      lcd.print(buffer[0], HEX);
+    }
+    if (count >= 1) {
+      lcd.print(buffer[1], HEX);
+    }
+    if (count >= 2) {
+      lcd.print(buffer[2], HEX);
+    }
+    if (count >= 3) {
+      lcd.print(buffer[3], HEX);
+    }
+  }
+  
   return count;
 }
 

@@ -9,5 +9,9 @@ int serialRead(char *buffer);
 void serialWrite(char *buffer, int len);
 
 void endSerial();
+
+void clearSerialReceive();
+void clearSerialTransmit();
+void clearSerial();
 #endif
 

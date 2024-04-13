@@ -1,9 +1,58 @@
+#define S0 22
+#define S1 32
+#define S2 28
+#define S3 26
+#define sensorOut 30
+
+// #define TRIG 23
+// #define ECHO 22
+
+/*
+void ultrasonicSensor(){
+  digitalWrite(TRIG, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+  long duration = pulseIn(ECHO, HIGH);
+  int distance = duration * 0.034/2;
+  dbprintf("ultrasonic: %d %d\n", duration, distance);
+}
+*/
+
 void setup() {
   // put your setup code here, to run once:
+  //pinMode(TRIG, OUTPUT);
+  //pinMode(ECHO, INPUT);
+
+// Stores frequency read by the photodiodes
+int redFrequency = 0;
+int greenFrequency = 0;
+int blueFrequency = 0;
+
+// Stores the red. green and blue colors
+int redColor = 0;
+int greenColor = 0;
+int blueColor = 0;
+
+  // Setting the outputs
+  pinMode(S0, OUTPUT);
+  pinMode(S1, OUTPUT);
+  pinMode(S2, OUTPUT);
+  pinMode(S3, OUTPUT);
+  
+  // Setting the sensorOut as an input
+  pinMode(sensorOut, INPUT);
+  
+  // Setting frequency scaling to 20%
+  digitalWrite(S0,HIGH);
+  digitalWrite(S1,LOW);
+  
   alexDiagonal = sqrt((ALEX_LENGTH * ALEX_LENGTH) + (ALEX_BREADTH *
     ALEX_BREADTH));
   alexCirc = PI * alexDiagonal;
   
+  lcdInit();
   cli();
   setupEINT();
   setupSerial();
@@ -11,23 +60,44 @@ void setup() {
   enablePullups();
   initializeState();
   sei();
+  stop();
 }
 
+
+long long int serialBufferClearTimer = 0;
+
 void loop() {
- // put your main code here, to run repeatedly:
+  /*serialBufferClearTimer += 1;
+  if (serialBufferClearTimer - millis() >= 10000){
+    serialBufferClearTimer = millis();
+    clearSerialRxBuffer();
+  }*/
+  
+  //colourSense();
+  // put your main code here, to run repeatedly:
   TPacket recvPacket; // This holds commands from the Pi
 
   TResult result = readPacket(&recvPacket);
   
   if(result == PACKET_OK){
-      handleCommand(&recvPacket);
+    //lcd.clear();
+    //lcd.setCursor(0, 0);
+    //lcd.print("handle command"); 
+    
+    handleCommand(&recvPacket);
   }else{
     if(result == PACKET_BAD)
     {
+    //lcd.clear();
+    //lcd.setCursor(0, 0);
+    //lcd.print("bad packet"); 
       sendBadPacket();
     }
     else if(result == PACKET_CHECKSUM_BAD)
     {
+    //lcd.clear();
+    //lcd.setCursor(0, 0);
+    //lcd.print("bad checksum"); 
       sendBadChecksum();
     } 
   }
