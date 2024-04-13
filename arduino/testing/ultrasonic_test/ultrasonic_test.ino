@@ -1,7 +1,7 @@
 // const int trigPin = 35;
 // const int echoPin = 37;
-const int trigPin = 29;
-const int echoPin = 31;
+const int trigPin = 34;
+const int echoPin = 36;
 // defines variables
 long duration;
 int distance;

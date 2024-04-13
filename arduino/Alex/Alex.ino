@@ -74,6 +74,7 @@ volatile unsigned long blueColor;
 volatile unsigned long greenFrequency;
 volatile unsigned long greenColor;
 
+char _recvBuffer, _xmitBuffer;
 
 /* --------------------------------------------------------------------------------*/
 // This function needs to be here if not it'll throw an error

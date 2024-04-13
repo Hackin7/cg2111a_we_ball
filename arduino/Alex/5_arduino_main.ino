@@ -4,10 +4,9 @@
 #define S3 26
 #define sensorOut 30
 
-// #define TRIG 23
-// #define ECHO 22
+#define TRIG 34
+#define ECHO 36
 
-/*
 void ultrasonicSensor(){
   digitalWrite(TRIG, LOW);
   delayMicroseconds(2);
@@ -18,12 +17,11 @@ void ultrasonicSensor(){
   int distance = duration * 0.034/2;
   dbprintf("ultrasonic: %d %d\n", duration, distance);
 }
-*/
 
 void setup() {
   // put your setup code here, to run once:
-  //pinMode(TRIG, OUTPUT);
-  //pinMode(ECHO, INPUT);
+  pinMode(TRIG, OUTPUT);
+  pinMode(ECHO, INPUT);
 
 // Stores frequency read by the photodiodes
 int redFrequency = 0;
@@ -63,16 +61,8 @@ int blueColor = 0;
   stop();
 }
 
-
 long long int serialBufferClearTimer = 0;
-
 void loop() {
-  /*serialBufferClearTimer += 1;
-  if (serialBufferClearTimer - millis() >= 10000){
-    serialBufferClearTimer = millis();
-    clearSerialRxBuffer();
-  }*/
-  
   //colourSense();
   // put your main code here, to run repeatedly:
   TPacket recvPacket; // This holds commands from the Pi

@@ -2,24 +2,16 @@
  * Setup and start codes for serial communications
  * 
  */
-// Set up the serial connection. For now we are using 
-// Arduino Wiring, you will replace this later
-// with bare-metal code.
+ 
 void setupSerial()
 {
-  // To replace later with bare-metal.
-  Serial.begin(9600);
-  // Change Serial to Serial2/Serial3/Serial4 in later labs when using the other UARTs
+  setupSerialLib();
 }
 
-// Start the serial connection. For now we are using
-// Arduino wiring and this function is empty. We will
-// replace this later with bare-metal code.
 
 void startSerial()
 {
-  // Empty for now. To be replaced with bare-metal code
-  // later on.
+  startSerialLib();
 }
 
 // Read the serial port. Returns the read character in
@@ -30,12 +22,7 @@ void startSerial()
 int readSerial(char *buffer)
 {
 
-  int count=0;
-
-  // Change Serial to Serial2/Serial3/Serial4 in later labs when using other UARTs
-
-  while(Serial.available())
-    buffer[count++] = Serial.read();
+  int count=readSerialLib(buffer);
   
   // LCD Code
   if (count > 0) {
@@ -64,18 +51,59 @@ int readSerial(char *buffer)
 
 void writeSerial(const char *buffer, int len)
 {
+  writeSerialLib(buffer, len);
+}
+
+/* --- Serial Library Version below --------------------------------------------------- */
+void setupSerialLib()
+{
+  // To replace later with bare-metal.
+  Serial.begin(9600);
+  // Change Serial to Serial2/Serial3/Serial4 in later labs when using the other UARTs
+}
+
+
+void startSerialLib()
+{
+}
+
+// Read the serial port. Returns the read character in
+// ch if available. Also returns TRUE if ch is valid. 
+// This will be replaced later with bare-metal code.
+
+
+int readSerialLib(char *buffer)
+{
+
+  int count=0;
+
+  // Change Serial to Serial2/Serial3/Serial4 in later labs when using other UARTs
+
+  while(Serial.available())
+    buffer[count++] = Serial.read();
+    
+  return count;
+}
+
+// Write to the serial port. Replaced later with
+// bare-metal code
+
+void writeSerialLib(const char *buffer, int len)
+{
   Serial.write(buffer, len);
   // Change Serial to Serial2/Serial3/Serial4 in later labs when using other UARTs
 }
 
+/* --- USART Interrupt Version below -------------------------------------------------- */
 
-// USART Interrupt Version below
+// https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/ATmega640-1280-1281-2560-2561-Datasheet-DS40002211A.pdf
 
-#define UDRIEMASK   0b00100000
 
 void setupUART()
 {
-  UCSR0C = 0b00000110;
+  UCSR0C = 0b00000110; // 0b 00(Async UART)_000_110
+  
+  // Set Baud Rate to 
   UBRR0H = 0;
   UBRR0L = 103;
   UCSR0A = 0;
@@ -92,9 +120,39 @@ ISR(USART_RX_vect)
   _recvBuffer = UDR0;
 }
 
+
+
+/* --- Sending Data ------------------------------------*/
+/*
+#define UDRIEMASK   0b00100000
 ISR(USART_UDRE_vect)
 {
-  // send data
-  UDR0 = _xmitBuffer;
+  char data;
+  TResult result = readBuffer(&_xmitBuffer, &data);
+  
+  if (result == BUFFER_OK) {
+    UDR0 = data  
+  } else if (result == BUFFER_EMPTY) {
+    
+  }
+  // UDR0 = _xmitBuffer;
   UCSR0B &= ~UDRIEMASK;
 }
+
+
+
+void writeUART(const char *buffer, int len){
+  TResult result = BUFFER_OK;
+  int i;
+  for (i=1; i<size && result == BUFFER_OK; i++){
+    result = writeBuffer(&_xmitBuffer, line[i]);
+  }
+  
+  // Start sending the first byte
+  UDR0 = line[0]
+  
+  // Enable the UDRE interrupt. The enable bit is bit 5 of UCSR0B
+  UCSR0B |= 0b0010000;
+    
+}
+*/

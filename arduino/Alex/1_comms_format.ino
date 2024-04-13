@@ -186,7 +186,7 @@ void handleCommand(TPacket *command)
         //case COMMAND_GET_COLOUR:
   	    colourSense();
   	    colourStatus();
-        //ultrasonicSensor();
+        ultrasonicSensor();
         break;
     case COMMAND_CLEAR_STATS:
         sendOK();
