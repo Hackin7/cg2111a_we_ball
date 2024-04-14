@@ -242,6 +242,7 @@ void *keyboardControlThread(void *conn) {
                 break;
             case 'p': // Change Params
 				tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);// restore terminal settings
+				printf("Key in new speeds f_b_l_r:\n");
 				printf("Current Speeds: f=%d b=%d l=%d r=%d\n", speeds[0], speeds[1], speeds[2], speeds[3]);
 				scanf("%d %d %d %d", &speeds[0], &speeds[1], &speeds[2], &speeds[3]);
     			tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
@@ -253,12 +254,15 @@ void *keyboardControlThread(void *conn) {
 			case 'K':
 				move(conn, 'K');
 				break;
+			// Get commands
+			case 'g':
+			case 'G':
+                move(conn, 'g');
+				break;
             default:
                 move(conn, 's');
 				break;
         }
-
-        
     }
 
 	// Restore terminal settings on exit
