@@ -71,7 +71,11 @@ void movementTimerSetup(){
     TCCR5A &= ~(1 << WGM51 | 1 << WGM50);
     TCCR5B |= (1 << WGM52);
     // Set prescaler to 1024
-    TCCR5B |= (1 << CS52) | (1 << CS50);
+    //TCCR5B |= (1 << CS52) | (1 << CS50);
+    
+    // Set prescaler to 1 - Max accuracy
+    TCCR5B |= (1 << CS50);
+    
     // Load the compare value for 1 ms interval
     //OCR5A = 15; 
     //OCR5A = 15624;
@@ -83,51 +87,13 @@ void movementTimerSetup(){
 
 void movementTimerEnable(){
     TCNT5 = 0;
-    OCR5A = 15; //time_val; //15624 - 1 second;
+    OCR5A = 14974; //time_val; //15624 - 1 second;
     TIMSK5 |= (1 << OCIE5A);
 }
 void movementTimerDisable(){
     TIMSK5 &= ~(1 << OCIE5A);
 }
 
-/*
-volatile int32_t stopTime = 0; // OCR5A total value
-volatile int32_t stepTime = 0;
-void movementTimerEnable(int32_t time_val){
-    TCNT5 = 0;
-    OCR5A = time_val; //15624 - 1 second;
-    TIMSK5 |= (1 << OCIE5A);
-}
-void movementTimerDisable(){
-    TIMSK5 &= ~(1 << OCIE5A);
-}
-
-void calcStepTime(){
-  stepTime = stopTime;
-  if (stepTime > 255) {
-    stepTime = 255; //time_val;
-  }
-}
-
-// Timer0 compare match interrupt service routine
-ISR(TIMER5_COMPA_vect) {
-    //stop();
-    //movementTimerDisable();
-    if (stopTime <= 0) {
-      stop();
-      movementTimerDisable();
-      dbprintf("stop");
-      return;
-    }
-    //dbprintf("stopTime = %d, OCR5A = %d", stopTime, OCR5A);
-    //dbprintf("stepTime = %d", stepTime);
-    
-    stopTime -= stepTime;
-    calcStepTime();
-    movementTimerEnable(stepTime);
-    //dbprintf("stopTime = %d, OCR5A = %d", stopTime, OCR5A);
-    //dbprintf("stepTime = %d", stepTime);
-}*/
 
 volatile int32_t timeDiff = -1; 
 volatile int32_t milliseconds = 0;
@@ -146,11 +112,6 @@ void movementTimerTrigger(int time_val){
   timeDiff = time_val;
   milliseconds = 0;
   movementTimerEnable();
-  /*stopTime = time_val * 14.624; // 1 millisecond is 14.624 timer
-  calcStepTime();
-  dbprintf("stopTime = %d, stepTime=%d", stopTime, stepTime);
-  movementTimerEnable(stepTime);
-  dbprintf("stopTime = %d, stepTime=%d", stopTime, stepTime);*/
 }
 
 void timersFailsave(TDirection setDir, int moveDir, int time, float speed){
