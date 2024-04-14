@@ -11,6 +11,10 @@
 // Tells us that the network is running.
 static volatile int networkActive=0;
 
+// DEBUG Prints
+//static volatile int debug_print_tls = false;
+
+
 void handleError(const char *buffer)
 {
 	switch(buffer[1])
@@ -99,14 +103,14 @@ void handleNetwork(const char *buffer, int len)
 void sendData(void *conn, const char *buffer, int len)
 {
 	int c;
-	printf("\nSENDING %d BYTES DATA\n\n", len);
+	printf("sendData() - SENDING %d BYTES DATA\n", len);
 	int buflen = sizeof(buffer);
 	if(networkActive)
 	{
 		/* TODO: Insert SSL write here to write buffer to network */
 		c = sslWrite(conn, buffer, sizeof(buffer));
-        printf("read %d bytes from server.\n", c);
-		printf("sendDataReceive: %s\n", buffer); 
+        printf("sendData() - read %d bytes from server.\n", c);
+		//printf("sendDataReceive: %s\n", buffer); 
 		/* END TODO */	
 		networkActive = (c > 0);
 	}
@@ -123,11 +127,11 @@ void *readerThread(void *conn)
 		len = sslRead(conn, buffer, sizeof(buffer));
 
         if(len < 0) {
-            perror("Error reading socket: ");
+            perror("readerThread() - Error reading socket: ");
         }
 
         if(len > 0) {
-            printf("\nReceived: \"%s\"\n", buffer);
+            printf("readerThread() - Received: \"%s\"\n", buffer);
         }
 		/* END TODO */
 
@@ -137,7 +141,7 @@ void *readerThread(void *conn)
 			handleNetwork(buffer, len);
 	}
 
-	printf("Exiting network listener thread\n");
+	printf("readerThread() - Exiting network listener thread\n");
     
     /* TODO: Stop the client loop and call EXIT_THREAD */
     stopClient();
@@ -188,6 +192,20 @@ void move(void *conn, char ch){
 	move(conn, ch, 0);
 }
 
+void printCommands(){
+	printf("\n\n");
+	printf("### Commands ##################################################\n");
+	printf("wasd, q=stop\n");
+	printf("p=changeparams, c=command)\n");
+	printf("k=kill, K=unkill, l=clearSerializeBuffer\n");
+	printf("x=exit\n");
+	printf("---------------------------------------------------------------\n");
+}
+void printState(int speeds[4]){
+	printCommands();
+	printf("Current Speeds: f=%d b=%d l=%d r=%d\n", speeds[0], speeds[1], speeds[2], speeds[3]);
+	printf("###############################################################\n");
+}
 void *keyboardControlThread(void *conn) {
 	// Get terminal settings
     termios oldTermios, newTermios;
@@ -200,25 +218,24 @@ void *keyboardControlThread(void *conn) {
     tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
 
 	int speeds[4] = {50, 50, 50, 50};
-
-	
-	printf("Command\n");
-	printf("(wasd, q=stop, p=changeparams, x=exit, c=command)\n");
-	printf("(k=kill, K=unkill)\n");
-	
 	bool exit=false;
 	char ch;
 
+	printState(speeds);
     while (!exit) {
-		printf("Current Speeds: f=%d b=%d l=%d r=%d\n", speeds[0], speeds[1], speeds[2], speeds[3]);
+		
 
         ch = getchar();
-
+		printf("---------------------------------------------------------------\n");
+		printf("keyboardControlThread() - char = '%c'\n", ch);
         switch (ch) {
+			case '\n':
+				printState(speeds);
+				break;
+			// Movement ////////////////////////////////////////////////
             case 'w':
                 move(conn, 'f', speeds[0]);
 				break;
-
             case 'a':
                 move(conn, 'l', speeds[1]);
 				break;
@@ -235,6 +252,7 @@ void *keyboardControlThread(void *conn) {
                 cout << "Exiting..." << endl;
 				exit=true;
                 break;
+			// Parameters ///////////////////////////////////////////////////
             case 'c':
 				tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);// restore terminal settings
 				getCommand(conn);
@@ -247,7 +265,7 @@ void *keyboardControlThread(void *conn) {
 				scanf("%d %d %d %d", &speeds[0], &speeds[1], &speeds[2], &speeds[3]);
     			tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
                 break;
-			// Kills
+			// Kills ///////////////////////////////////////////////////////
 			case 'k':
 			case 'K':
 				move(conn, ch);
@@ -255,7 +273,7 @@ void *keyboardControlThread(void *conn) {
 			case 'l':
                 move(conn, 'a');
 				break;
-			// Get commands
+			// Get commands ///////////////////////////////////////////////
 			case 'g':
 			case 'G':
                 move(conn, 'g');
@@ -264,6 +282,7 @@ void *keyboardControlThread(void *conn) {
                 move(conn, 's');
 				break;
         }
+		
     }
 
 	// Restore terminal settings on exit
@@ -298,33 +317,35 @@ int getCommand(void *conn){
 		case 'L':
 		case 'r':
 		case 'R':
-					getParams(params);
-					buffer[1] = ch;
-					memcpy(&buffer[2], params, sizeof(params));
-					sendData(conn, buffer, sizeof(buffer));
-					break;
+			getParams(params);
+			buffer[1] = ch;
+			memcpy(&buffer[2], params, sizeof(params));
+			sendData(conn, buffer, sizeof(buffer));
+			break;
 		case 's':
 		case 'S':
 		case 'c':
 		case 'C':
 		case 'g':
 		case 'G':
-				params[0]=0;
-				params[1]=0;
-				memcpy(&buffer[2], params, sizeof(params));
-				buffer[1] = ch;
-				sendData(conn, buffer, sizeof(buffer));
-				break;
+			params[0]=0;
+			params[1]=0;
+			memcpy(&buffer[2], params, sizeof(params));
+			buffer[1] = ch;
+			sendData(conn, buffer, sizeof(buffer));
+			break;
 		case 'q':
 		case 'Q':
 			//quit=1;
 			return 1;
 			break;
 		default:
-			printf("BAD COMMAND\n");
+			printf("getCommand() - BAD COMMAND\n");
 	}
 	return 0;
 }
+
+// Old Code
 void *writerThread(void *conn)
 {
 	int quit=0;
