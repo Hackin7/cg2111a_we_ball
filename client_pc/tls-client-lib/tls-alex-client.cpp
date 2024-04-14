@@ -13,6 +13,8 @@ static volatile int networkActive=0;
 
 // DEBUG Prints
 //static volatile int debug_print_tls = false;
+#include<chrono> 
+#include<thread>
 
 
 void handleError(const char *buffer)
@@ -341,13 +343,13 @@ void *keyboardControlThread(void *conn) {
                 move(conn, 's');
 				break;
         }
-		
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 
 	// Restore terminal settings on exit
 	tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);
 	/* Stop the client loop and call EXIT_THREAD */
-    stopClient();
+    //stopClient();
     EXIT_THREAD(conn);
     return NULL;
 }
