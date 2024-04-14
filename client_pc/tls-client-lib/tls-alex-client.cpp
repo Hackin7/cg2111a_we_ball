@@ -135,7 +135,7 @@ void *readerThread(void *conn)
         }
 		/* END TODO */
 
-		networkActive = (len > 0);
+		networkActive = ( len > 0);
 
 		if(networkActive)
 			handleNetwork(buffer, len);
@@ -166,6 +166,7 @@ void getParams(int32_t *params)
 	flushInput();
 }
 
+
 /* --- Keyboard Code --------------------------------------------------------------------- */
 #include <iostream>
 #include <termios.h>
@@ -174,12 +175,12 @@ using namespace std;
 
 int getCommand(void *conn);
 
-void move(void *conn, char ch, int speed){
+void move(void *conn, char ch, int distance, int speed){
 	char buffer[10];
 	int32_t params[2];
 
 	//getParams(params);
-	params[0] = 0;
+	params[0] = distance;
 	params[1] = speed;
 
 	buffer[0] = NET_COMMAND_PACKET;
@@ -189,8 +190,47 @@ void move(void *conn, char ch, int speed){
 }
 
 void move(void *conn, char ch){
-	move(conn, ch, 0);
+	move(conn, ch, 0, 0);
 }
+/* --- Angle Code ------------------------------------------------------------------------ */
+int angleConversion(int speed, int angle){
+	// batt level around 8.8V
+	float rateOfRotation = 0; // time / 180degrees
+	if (speed >= 100){
+		rateOfRotation = 3500 / 360; // 3.5 seconds
+	} else if (speed >= 90){
+		rateOfRotation = 3500 / 360; // 3.5 seconds
+	} else if (speed >= 80){
+		rateOfRotation = 4000 / 360; // 4 seconds
+	} else if (speed >= 70){
+		rateOfRotation = 5000 / 360; // 5 seconds
+	} else if (speed >= 60){
+		rateOfRotation = 6000 / 360; // 6 seconds
+	} else if (speed >= 0){
+		rateOfRotation = 20000 / 360; // 20 seconds
+	}
+	int output = rateOfRotation * angle;
+	printf("Distance Calculated: %f * %d = %d\n", rateOfRotation, angle, output);
+	return output;
+}
+void approxAngle(void *conn, char ch){
+	int32_t params[2];
+	int32_t angle=0;
+	int32_t speed=0;
+	printf("Enter approx angle + speed\n");
+	scanf("%d %d", &angle, &speed);
+
+	move(conn, ch, angleConversion(speed, angle)+1000, speed); // + 1000 to use timer logic
+}
+void distanceMove(void *conn, char ch){
+	int32_t params[2];
+	int32_t dist=0;
+	int32_t speed=0;
+	printf("Enter approx dist + speed\n");
+	scanf("%d %d", &dist, &speed);
+	move(conn, ch, dist, speed); // + 1000 to use timer logic
+}
+
 
 void printCommands(){
 	printf("\n\n");
@@ -223,8 +263,6 @@ void *keyboardControlThread(void *conn) {
 
 	printState(speeds);
     while (!exit) {
-		
-
         ch = getchar();
 		printf("---------------------------------------------------------------\n");
 		printf("keyboardControlThread() - char = '%c'\n", ch);
@@ -234,24 +272,45 @@ void *keyboardControlThread(void *conn) {
 				break;
 			// Movement ////////////////////////////////////////////////
             case 'w':
-                move(conn, 'f', speeds[0]);
+                move(conn, 'f', 0, speeds[0]);
 				break;
             case 'a':
-                move(conn, 'l', speeds[1]);
+                move(conn, 'l', 0, speeds[2]);
 				break;
 
             case 's':
-                move(conn, 'b', speeds[2]);
+                move(conn, 'b', 0, speeds[1]);
 				break;
 
             case 'd':
-                move(conn, 'r', speeds[3]);
+                move(conn, 'r', 0, speeds[3]);
 				break;
             case 'x':
                 // Exit the program
                 cout << "Exiting..." << endl;
 				exit=true;
                 break;
+			// timed movement ///////////////////////////////////////////////////
+			case 'W':
+				tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);// restore terminal settings
+				distanceMove(conn, 'f');
+    			tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
+				break;
+			case 'S':
+				tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);// restore terminal settings
+				distanceMove(conn, 'b');
+    			tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
+				break;
+			case 'A':
+				tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);// restore terminal settings
+				approxAngle(conn, 'l');
+    			tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
+				break;
+			case 'D':
+				tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);// restore terminal settings
+				approxAngle(conn, 'r');
+    			tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
+				break;
 			// Parameters ///////////////////////////////////////////////////
             case 'c':
 				tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);// restore terminal settings
