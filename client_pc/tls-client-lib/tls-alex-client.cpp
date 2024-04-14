@@ -100,11 +100,13 @@ void sendData(void *conn, const char *buffer, int len)
 {
 	int c;
 	printf("\nSENDING %d BYTES DATA\n\n", len);
+	int buflen = sizeof(buffer);
 	if(networkActive)
 	{
 		/* TODO: Insert SSL write here to write buffer to network */
 		c = sslWrite(conn, buffer, sizeof(buffer));
         printf("read %d bytes from server.\n", c);
+		printf("sendDataReceive: %s\n", buffer); 
 		/* END TODO */	
 		networkActive = (c > 0);
 	}
@@ -125,7 +127,7 @@ void *readerThread(void *conn)
         }
 
         if(len > 0) {
-            printf("\nReceived: %s\n", buffer);
+            printf("\nReceived: \"%s\"\n", buffer);
         }
 		/* END TODO */
 
@@ -166,19 +168,26 @@ void getParams(int32_t *params)
 #include <unistd.h>
 using namespace std;
 
-void move(void *conn, char ch){
+int getCommand(void *conn);
+
+void move(void *conn, char ch, int speed){
 	char buffer[10];
 	int32_t params[2];
 
 	//getParams(params);
 	params[0] = 0;
-	params[1] = 100;
+	params[1] = speed;
 
 	buffer[0] = NET_COMMAND_PACKET;
 	buffer[1] = ch;
 	memcpy(&buffer[2], params, sizeof(params));
 	sendData(conn, buffer, sizeof(buffer));
 }
+
+void move(void *conn, char ch){
+	move(conn, ch, 0);
+}
+
 void *keyboardControlThread(void *conn) {
 	// Get terminal settings
     termios oldTermios, newTermios;
@@ -190,31 +199,60 @@ void *keyboardControlThread(void *conn) {
     newTermios.c_lflag &= ~ECHO;
     tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
 
+	int speeds[4] = {50, 50, 50, 50};
 
+	
+	printf("Command\n");
+	printf("(wasd, q=stop, p=changeparams, x=exit, c=command)\n");
+	printf("(k=kill, K=unkill)\n");
+	
+	bool exit=false;
 	char ch;
-    while (true) {
+
+    while (!exit) {
+		printf("Current Speeds: f=%d b=%d l=%d r=%d\n", speeds[0], speeds[1], speeds[2], speeds[3]);
+
         ch = getchar();
 
         switch (ch) {
             case 'w':
-                move(conn, 'f');
+                move(conn, 'f', speeds[0]);
 				break;
 
             case 'a':
-                move(conn, 'l');
+                move(conn, 'l', speeds[1]);
 				break;
 
             case 's':
-                move(conn, 'b');
+                move(conn, 'b', speeds[2]);
 				break;
 
             case 'd':
-                move(conn, 'r');
+                move(conn, 'r', speeds[3]);
 				break;
             case 'x':
                 // Exit the program
                 cout << "Exiting..." << endl;
+				exit=true;
                 break;
+            case 'c':
+				tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);// restore terminal settings
+				getCommand(conn);
+    			tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
+                break;
+            case 'p': // Change Params
+				tcsetattr(STDIN_FILENO, TCSANOW, &oldTermios);// restore terminal settings
+				printf("Current Speeds: f=%d b=%d l=%d r=%d\n", speeds[0], speeds[1], speeds[2], speeds[3]);
+				scanf("%d %d %d %d", &speeds[0], &speeds[1], &speeds[2], &speeds[3]);
+    			tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
+                break;
+			// Kills
+			case 'k':
+				move(conn, 'k');
+				break;
+			case 'K':
+				move(conn, 'K');
+				break;
             default:
                 move(conn, 's');
 				break;
@@ -233,57 +271,62 @@ void *keyboardControlThread(void *conn) {
 
 /* --------------------------------------------------------------------------------------- */
 
+int getCommand(void *conn){
+	char ch;
+	printf("Command (f=forward, b=reverse, l=turn left, r=turn right, s=stop, c=clear stats, g=get stats q=exit)\n");
+	scanf("%c", &ch);
+
+	// Purge extraneous characters from input stream
+	flushInput();
+
+	char buffer[10];
+	int32_t params[2];
+
+	buffer[0] = NET_COMMAND_PACKET;
+	switch(ch)
+	{
+		case 'f':
+		case 'F':
+		case 'b':
+		case 'B':
+		case 'l':
+		case 'L':
+		case 'r':
+		case 'R':
+					getParams(params);
+					buffer[1] = ch;
+					memcpy(&buffer[2], params, sizeof(params));
+					sendData(conn, buffer, sizeof(buffer));
+					break;
+		case 's':
+		case 'S':
+		case 'c':
+		case 'C':
+		case 'g':
+		case 'G':
+				params[0]=0;
+				params[1]=0;
+				memcpy(&buffer[2], params, sizeof(params));
+				buffer[1] = ch;
+				sendData(conn, buffer, sizeof(buffer));
+				break;
+		case 'q':
+		case 'Q':
+			//quit=1;
+			return 1;
+			break;
+		default:
+			printf("BAD COMMAND\n");
+	}
+	return 0;
+}
 void *writerThread(void *conn)
 {
 	int quit=0;
 
 	while(!quit)
 	{
-		char ch;
-		printf("Command (f=forward, b=reverse, l=turn left, r=turn right, s=stop, c=clear stats, g=get stats q=exit)\n");
-		scanf("%c", &ch);
-
-		// Purge extraneous characters from input stream
-		flushInput();
-
-		char buffer[10];
-		int32_t params[2];
-
-		buffer[0] = NET_COMMAND_PACKET;
-		switch(ch)
-		{
-			case 'f':
-			case 'F':
-			case 'b':
-			case 'B':
-			case 'l':
-			case 'L':
-			case 'r':
-			case 'R':
-						getParams(params);
-						buffer[1] = ch;
-						memcpy(&buffer[2], params, sizeof(params));
-						sendData(conn, buffer, sizeof(buffer));
-						break;
-			case 's':
-			case 'S':
-			case 'c':
-			case 'C':
-			case 'g':
-			case 'G':
-					params[0]=0;
-					params[1]=0;
-					memcpy(&buffer[2], params, sizeof(params));
-					buffer[1] = ch;
-					sendData(conn, buffer, sizeof(buffer));
-					break;
-			case 'q':
-			case 'Q':
-				quit=1;
-				break;
-			default:
-				printf("BAD COMMAND\n");
-		}
+		quit = getCommand(conn);
 	}
 
 	printf("Exiting keyboard thread\n");
