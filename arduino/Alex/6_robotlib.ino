@@ -11,6 +11,12 @@ AF_DCMotor motorFR(FRONT_RIGHT);
 AF_DCMotor motorBL(BACK_LEFT);
 AF_DCMotor motorBR(BACK_RIGHT);
 
+unsigned long computeDeltaTicks(float ang)
+{
+  unsigned long ticks = (unsigned long) ((ang * alexCirc * COUNTS_PER_REV) / (360.0 * WHEEL_CIRC));
+  return ticks;
+}
+
 void move(float speed, int direction)
 {
   int speed_scaled = (speed/100.0) * 255;
@@ -132,7 +138,8 @@ void right(float ang, float speed) {
   } else {
       deltaTicks=computeDeltaTicks(ang);
   }
-  targetTicks = rightReverseTicksTurns + deltaTicks;
+  //targetTicks = rightReverseTicksTurns + deltaTicks;
+  targetTicks = leftForwardTicksTurns + deltaTicks;
   dbprintf("right targetTicks: %d %d", deltaTicks, targetTicks, "\n");
   
   cw(ang, speed);

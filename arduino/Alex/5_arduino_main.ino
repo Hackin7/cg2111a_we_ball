@@ -7,21 +7,34 @@
 #define TRIG 34
 #define ECHO 36
 
+
 void ultrasonicSensor(){
-  digitalWrite(TRIG, LOW);
-  delayMicroseconds(2);
-  digitalWrite(TRIG, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG, LOW);
+  // digitalWrite(TRIG, LOW);
+  PORTC &= ~(0b00001000);
+  // delayMicroseconds(2);
+  _delay_ms(2);
+  // digitalWrite(TRIG, HIGH);
+  PORTC |= 0b00001000;
+  // delayMicroseconds(10);
+  _delay_ms(10);
+  // digitalWrite(TRIG, LOW);
+  PORTC &= ~(0b00001000);
   long duration = pulseIn(ECHO, HIGH);
   int distance = duration * 0.034/2;
   dbprintf("ultrasonic: %d %d\n", duration, distance);
 }
 
+void ultrasonicSetup() {
+  // put your setup code here, to run once:
+  // pinMode(TRIG, OUTPUT);
+  DDRC |= 0b00001000;
+  // pinMode(ECHO, INPUT);
+  DDRC &= ~(0b00000010);
+}
+
 void setup() {
   // put your setup code here, to run once:
-  pinMode(TRIG, OUTPUT);
-  pinMode(ECHO, INPUT);
+  ultrasonicSetup();
 
 // Stores frequency read by the photodiodes
 int redFrequency = 0;

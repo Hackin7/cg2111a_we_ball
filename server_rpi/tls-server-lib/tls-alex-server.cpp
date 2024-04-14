@@ -45,8 +45,6 @@ static void *tls_conn = NULL;
 #include "alex_uart.cpp"
 
 
-
-
 void handleCommand(void *conn, const char *buffer)
 {
 	// The first byte contains the command
