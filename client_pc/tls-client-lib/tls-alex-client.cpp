@@ -249,10 +249,11 @@ void *keyboardControlThread(void *conn) {
                 break;
 			// Kills
 			case 'k':
-				move(conn, 'k');
-				break;
 			case 'K':
-				move(conn, 'K');
+				move(conn, ch);
+				break;
+			case 'l':
+                move(conn, 'a');
 				break;
 			// Get commands
 			case 'g':
