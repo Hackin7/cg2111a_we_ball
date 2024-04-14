@@ -73,14 +73,14 @@ void movementTimerSetup(){
     // Set prescaler to 1024
     TCCR5B |= (1 << CS52) | (1 << CS50);
     // Load the compare value for 1 ms interval
-    OCR5A = 15; 
+    //OCR5A = 15; 
     //OCR5A = 15624;
     //// Enable Timer5 compare match interrupt
-    TIMSK5 |= (1 << OCIE5A);
+    //TIMSK5 |= (1 << OCIE5A);
     // Enable global interrupts - done later
     //sei();
 }
-/*
+
 void movementTimerEnable(){
     TCNT5 = 0;
     OCR5A = 15; //time_val; //15624 - 1 second;
@@ -89,7 +89,7 @@ void movementTimerEnable(){
 void movementTimerDisable(){
     TIMSK5 &= ~(1 << OCIE5A);
 }
-*/
+
 /*
 volatile int32_t stopTime = 0; // OCR5A total value
 volatile int32_t stepTime = 0;
@@ -138,12 +138,14 @@ void movementTimerCheck(){
   if (timeDiff != -1 && milliseconds > timeDiff) {
     stop();
     timeDiff = -1;
+    movementTimerDisable();
   }
 }
 
 void movementTimerTrigger(int time_val){
   timeDiff = time_val;
   milliseconds = 0;
+  movementTimerEnable();
   /*stopTime = time_val * 14.624; // 1 millisecond is 14.624 timer
   calcStepTime();
   dbprintf("stopTime = %d, stepTime=%d", stopTime, stepTime);
