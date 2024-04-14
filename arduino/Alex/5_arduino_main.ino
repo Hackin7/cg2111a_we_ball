@@ -70,6 +70,7 @@ int blueColor = 0;
   startSerial();
   enablePullups();
   initializeState();
+  movementTimerSetup();
   sei();
   stop();
 }
@@ -105,53 +106,7 @@ void loop() {
     } 
   }
 
-  if(deltaDist > 0)
-  {
-    if(dir==FORWARD)
-    {
-      if(forwardDist > newDist)
-      {
-        deltaDist=0;
-        newDist=0;
-        stop();
-      }
-    } else if (dir == BACKWARD)
-    {
-      if(reverseDist > newDist)
-      {
-      deltaDist=0;
-      newDist=0;
-      stop();
-      }
-    } else if(dir == STOP)
-    {
-      deltaDist=0;
-      newDist=0;
-      stop();
-    }
-  }
-    
-  if (deltaTicks > 0) {
-    if (dir == LEFT) {
-      if (leftReverseTicksTurns >= targetTicks){
-        dbprintf("reset1: %d %d", leftReverseTicksTurns, targetTicks, "\n");
-        deltaTicks = 0;
-        targetTicks = 0;
-        stop();
-      }
-    } else if (dir == RIGHT) {
-      if (rightReverseTicksTurns >= targetTicks){
-        dbprintf("reset2: %d %d", rightReverseTicksTurns, targetTicks, "\n");
-        deltaTicks = 0;
-        targetTicks = 0;
-        stop();
-      } 
-    } else if (dir == STOP) {
-        dbprintf("reset3: %d", targetTicks, "\n");
-      deltaTicks = 0;
-      targetTicks = 0;
-      stop();
-    } 
-  }    
+  movementTimerCheck();
+  encodersCheck();
       
 }
