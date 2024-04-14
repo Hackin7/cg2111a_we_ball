@@ -118,9 +118,12 @@ void handleCommand(void *conn, const char *buffer)
       system("raspi-gpio set 23 op");
       system("raspi-gpio set 23 dl");
 			printf("Unreset Arduino\n");
+      // rolls over
+    case 'a':
+      // restart Serial 1 - send something to clear buffer
       endSerial();
-      sleep(5);
-      // restart Serial
+      sleep(3);
+      resetDeserialize();
       serialInit();
 			printf("DONE. Sending HELLO to Arduino\n");
     	sendHello();

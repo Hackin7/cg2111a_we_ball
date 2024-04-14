@@ -18,4 +18,6 @@ typedef enum
 int serialize(char *buffer, void *dataStructure, size_t size);
 TResult deserialize(const char *buffer, int len, void *output);
 
+void resetDeserialize(); // additional function
+
 #endif

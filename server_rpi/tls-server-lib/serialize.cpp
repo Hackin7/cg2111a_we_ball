@@ -20,15 +20,28 @@ typedef struct comms
 
 static char _privateBuffer[PACKET_SIZE];
 
+
+/* --- Moving variables outside -> Ease of reset ------------------------------ */
+// For copying to output buffer
+static int counter=0;
+// If there's leftover bytes from the next transmission
+static int leftoverFlag=0;
+static int leftoverCount=0;
+static char leftoverBuffer[PACKET_SIZE];
+
+
+void resetDeserialize(){
+  // For copying to output buffer
+  counter=0;
+  // If there's leftover bytes from the next transmission
+  leftoverFlag=0;
+  leftoverCount=0;
+  //leftoverBuffer[PACKET_SIZE];
+}
+
 static TResult assemble(char *outputBuffer, const char *inputBuffer, int len)
 {
-	// For copying to output buffer
-	static int counter=0;
-
-	// If there's leftover bytes from the next transmission
-	static int leftoverFlag=0;
-	static int leftoverCount=0;
-	static char leftoverBuffer[PACKET_SIZE];
+	// variables used to be here
 
 	int bytesLeft;
 	int i;	
