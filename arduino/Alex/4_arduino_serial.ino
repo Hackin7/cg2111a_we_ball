@@ -5,13 +5,15 @@
  
 void setupSerial()
 {
-  setupSerialLib();
+  //setupSerialLib();
+  setupUART();
 }
 
 
 void startSerial()
 {
-  startSerialLib();
+  //startSerialLib();
+  startUART();
 }
 
 // Read the serial port. Returns the read character in
@@ -51,7 +53,8 @@ int readSerial(char *buffer)
 
 void writeSerial(const char *buffer, int len)
 {
-  writeSerialLib(buffer, len);
+  //writeSerialLib(buffer, len);
+  writeUART(buffer, len);
 }
 
 /* --- Serial Library Version below --------------------------------------------------- */
@@ -99,27 +102,57 @@ void writeSerialLib(const char *buffer, int len)
 // https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/ATmega640-1280-1281-2560-2561-Datasheet-DS40002211A.pdf
 
 
+volatile char buffer[1024];
+volatile int counts = 0 ;
+
+
+
+
+
 void setupUART()
 {
-  UCSR0C = 0b00000110; // 0b 00(Async UART)_000_110
+  // UCSR0C = 0b00000110; // 0b 00(Async UART)_000_110
   
-  // Set Baud Rate to 
+  // // Set Baud Rate to 9600
   UBRR0H = 0;
   UBRR0L = 103;
   UCSR0A = 0;
-}
+  // UBRR0H = 0;
+  // UBRR0L = 0b01100111;
+  // UCSR0A = 0;
 
+  //UCSR0B = (1 << RXEN0) | (1 << TXEN0);
+  UCSR0C = (1<< UCSZ01) | (1 << UCSZ00);
+}
 void startUART()
 {
   UCSR0B = 0b10111000;
 }
 
-ISR(USART_RX_vect)
-{
-  // receive data
-  _recvBuffer = UDR0;
+// Actual Interrupts //
+// RECIEVE COMPLETE //
+ISR(USART0_RXC){
+  buffer[counts++] = UDR0;
+  if (counts >= 7){ counts = 0; };
 }
 
+// TRANSFER COMPLETE //
+ISR(USART0_TXC){
+
+}
+
+// UDR EMPTY HANDLER //
+ISR(USART0_UDRE){
+
+}
+
+
+void writeUART( const char *buffer, int len){
+  for ( int i = 0 ; i < len ; i ++ ){
+    while ( !(UCSR0A & (1<< UDRE0))){}
+    UDR0 = buffer[i];
+  }
+}
 
 
 /* --- Sending Data ------------------------------------*/

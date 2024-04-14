@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#PATH_TO_PROJ=testing/ultrasonic_test/
-#FILENAME=ultrasonic_test.ino
+#PATH_TO_PROJ=testing/bare_metal_serial/
+#FILENAME=bare_metal_serial.ino
 
 PATH_TO_PROJ=Alex/
 FILENAME=Alex.ino
