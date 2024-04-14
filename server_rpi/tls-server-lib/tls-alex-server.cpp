@@ -48,8 +48,18 @@ static void *tls_conn = NULL;
 
 	*/
 
+
+// Consolidate settings here
+
+
+/* --- Serial ------------------------------------------------------ */
+
 // Prototype for sendNetworkData
 void sendNetworkData(const char *, int);
+
+void sendNetworkData(const char *buf){
+  sendNetworkData(buf, sizeof(buf));
+} 
 
 void handleErrorResponse(TPacket *packet)
 {
@@ -58,6 +68,7 @@ void handleErrorResponse(TPacket *packet)
 	buffer[0] = NET_ERROR_PACKET;
 	buffer[1] = packet->command;
 	sendNetworkData(buffer, sizeof(buffer));
+  sendNetworkData("UART ERROR");
 }
 
 void handleMessage(TPacket *packet)
@@ -67,6 +78,7 @@ void handleMessage(TPacket *packet)
 	data[0] = NET_MESSAGE_PACKET;
 	memcpy(&data[1], packet->data, sizeof(packet->data));
 	sendNetworkData(data, sizeof(data));
+  sendNetworkData("handledMessage");
 }
 
 void handleStatus(TPacket *packet)
@@ -180,6 +192,22 @@ void *uartReceiveThread(void *p)
 	} // while
 }
 
+void serialInit(){
+  startSerial(PORT_NAME, BAUD_RATE, 8, 'N', 1, 5);
+}
+
+void sendHello()
+{
+	// Send a hello packet
+	TPacket helloPacket;
+
+	helloPacket.packetType = PACKET_TYPE_HELLO;
+	uartSendPacket(&helloPacket);
+}
+
+
+/* --- Network ------------------------------------------------------ */
+
 /*
 
 	Alex Network Routines
@@ -274,7 +302,24 @@ void handleCommand(void *conn, const char *buffer)
 			commandPacket.command = COMMAND_GET_STATS;
 			uartSendPacket(&commandPacket);
 			break;
-
+    
+    // Kill Command
+    case 'k':
+      system("raspi-gpio set 23 op");
+      system("raspi-gpio set 23 dh");
+      break;
+    case 'K':
+      system("raspi-gpio set 23 op");
+      system("raspi-gpio set 23 dl");
+			printf("Unreset Arduino\n");
+      endSerial();
+      sleep(5);
+      // restart Serial
+      serialInit();
+			printf("DONE. Sending HELLO to Arduino\n");
+    	sendHello();
+    	printf("DONE.\n");
+      break;
 		default:
 			printf("Bad command\n");
 
@@ -328,17 +373,12 @@ void *worker(void *conn)
     // Reset tls_conn to NULL.
     tls_conn = NULL;
     EXIT_THREAD(conn);
+    endSerial();
 }
 
 
-void sendHello()
-{
-	// Send a hello packet
-	TPacket helloPacket;
 
-	helloPacket.packetType = PACKET_TYPE_HELLO;
-	uartSendPacket(&helloPacket);
-}
+
 
 int main()
 {
@@ -351,7 +391,8 @@ int main()
 
 	printf("Opening Serial Port\n");
 	// Open the serial port
-	startSerial(PORT_NAME, BAUD_RATE, 8, 'N', 1, 5);
+	//startSerial(PORT_NAME, BAUD_RATE, 8, 'N', 1, 5);
+  serialInit();
 	printf("Done. Waiting 3 seconds for Arduino to reboot\n");
 	sleep(3);
 
