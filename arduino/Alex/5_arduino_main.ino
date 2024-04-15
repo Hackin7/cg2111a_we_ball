@@ -27,18 +27,17 @@ long ultrasonicSensorDuration(bool print){
   return duration;
 }
 
-float ultraSonicSensorDistance(){
-  long duration = ultrasonicSensorDuration(false);
-  float distance = (float)duration * 0.034/2;
-  return distance;
-}
-
 void ultrasonicSensor(){
-  long duration = ultrasonicSensorDuration(true);
-  float distance = (float)duration * 0.034/2;
+  long duration = ultrasonicSensorDuration(false);
+  long distance = (duration * 34)/1000 /2;
   ultDuration = (uint32_t)duration;
   ultDist = distance;
-  dbprintf("ultdist: %f\n", distance);
+  dbprintf("ultdist: %d\n", distance);
+}
+
+long ultraSonicSensorDistance(){
+  ultrasonicSensor();
+  return ultDist;
 }
 
 void ultrasonicSetup() {
@@ -92,6 +91,9 @@ int blueColor = 0;
   stop();
 }
 
+
+volatile bool enableUltrasonic = 0; 
+
 long long int serialBufferClearTimer = 0;
 void loop() {
   //colourSense();
@@ -123,11 +125,12 @@ void loop() {
     } 
   }
 
-  //if(dir==FORWARD && deltaDist > 0){
-    /*if (ultraSonicSensorDistance() < 15){
+  if(dir==FORWARD && enableUltrasonic){
+    if (ultraSonicSensorDistance() < 13){
       stop();
-    }*/
-  //}
+      enableUltrasonic = false;
+    }
+  }
   movementTimerCheck();
   encodersCheck();
       

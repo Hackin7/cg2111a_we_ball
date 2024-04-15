@@ -133,7 +133,7 @@ void forward(float dist, float speed)
   // failsafe - Timers
   if (dist > 1000) {
     timersFailsave(FORWARD, FORWARD, dist-1000, speed);
-      deltaDist = dist;
+    enableUltrasonic = true;
     return;
   }
   movementTimerForceStop();
