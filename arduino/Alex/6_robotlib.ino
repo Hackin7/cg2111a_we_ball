@@ -100,11 +100,15 @@ volatile int32_t milliseconds = 0;
 ISR(TIMER5_COMPA_vect) {
   milliseconds++;
 }
+
+void movementTimerForceStop(){
+    timeDiff = -1;
+    movementTimerDisable();
+}
 void movementTimerCheck(){
   if (timeDiff != -1 && milliseconds > timeDiff) {
     stop();
-    timeDiff = -1;
-    movementTimerDisable();
+    //movementTimerForceStop();
   }
 }
 
@@ -129,8 +133,10 @@ void forward(float dist, float speed)
   // failsafe - Timers
   if (dist > 1000) {
     timersFailsave(FORWARD, FORWARD, dist-1000, speed);
+      deltaDist = dist;
     return;
   }
+  movementTimerForceStop();
   
   if(dist > 0) {
       deltaDist = dist;
@@ -150,6 +156,7 @@ void backward(float dist, float speed)
     timersFailsave(BACKWARD, BACKWARD, dist-1000, speed);
     return;
   }
+  movementTimerForceStop();
   
   if(dist > 0) {
       deltaDist = dist;
@@ -170,6 +177,7 @@ void left(float ang, float speed) {
     timersFailsave(LEFT, CCW, ang-1000, speed);
     return;
   }
+  movementTimerForceStop();
   
   if(ang == 0) {
       deltaTicks=99999999;
@@ -188,6 +196,7 @@ void right(float ang, float speed) {
     timersFailsave(RIGHT, CW, ang-1000, speed);
     return;
   }
+  movementTimerForceStop();
   
   if(ang == 0) {
       deltaTicks=99999999;
@@ -216,5 +225,7 @@ void cw(float dist, float speed)
 
 void stop()
 {
+  deltaDist = 0;
+  movementTimerForceStop();
   move(0, STOP);
 }

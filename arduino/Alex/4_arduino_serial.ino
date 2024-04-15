@@ -132,8 +132,9 @@ void startUART()
 // Actual Interrupts //
 // RECIEVE COMPLETE //
 ISR(USART0_RXC){
-  buffer[counts++] = UDR0;
-  if (counts >= 7){ counts = 0; };
+  //buffer[counts++] = UDR0;
+  //if (counts >= 1024){ counts = 0; };
+  
 }
 
 // TRANSFER COMPLETE //
@@ -154,7 +155,19 @@ void writeUART( const char *buffer, int len){
   }
 }
 
-
+/*
+void readUART(char *buffer){
+  int count = 0;
+  TResult result;
+  do {
+    result = readBuffer(&_recvBuffer, &buffer[count]);
+    if (result == BUFFER_OK){
+      count++;
+    }
+  } while (result == BUFFER_OK);
+  return count;
+}
+*?
 /* --- Sending Data ------------------------------------*/
 /*
 #define UDRIEMASK   0b00100000
