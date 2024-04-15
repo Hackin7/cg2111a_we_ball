@@ -76,6 +76,10 @@ volatile unsigned long greenColor;
 
 char _recvBuffer, _xmitBuffer;
 
+
+volatile long ultDuration = -1;
+volatile float ultDist = -1;
+
 /* --------------------------------------------------------------------------------*/
 // This function needs to be here if not it'll throw an error
 TResult readPacket(TPacket *packet) 

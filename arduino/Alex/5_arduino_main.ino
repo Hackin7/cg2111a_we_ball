@@ -7,6 +7,8 @@
 #define TRIG 34
 #define ECHO 36
 
+//long ultDuration = -1;
+//long ultD = -1;
 long ultrasonicSensorDuration(bool print){
   // digitalWrite(TRIG, LOW);
   PORTC &= ~(0b00001000);
@@ -22,18 +24,21 @@ long ultrasonicSensorDuration(bool print){
   if (print){
     dbprintf("Ult: %d\n", duration);
   }
+  return duration;
 }
 
-long ultraSonicSensorDistance(){
+float ultraSonicSensorDistance(){
   long duration = ultrasonicSensorDuration(false);
-  long distance = duration * 0.034/2;
+  float distance = (float)duration * 0.034/2;
   return distance;
 }
 
 void ultrasonicSensor(){
   long duration = ultrasonicSensorDuration(true);
-  long distance = duration * 0.034/2;
-  dbprintf("ultdist: %d\n", distance);
+  float distance = (float)duration * 0.034/2;
+  ultDuration = (uint32_t)duration;
+  ultDist = distance;
+  dbprintf("ultdist: %f\n", distance);
 }
 
 void ultrasonicSetup() {
@@ -118,11 +123,11 @@ void loop() {
     } 
   }
 
-  if(dir==FORWARD && deltaDist > 0){
-    if (ultraSonicSensorDistance() < 10){
+  //if(dir==FORWARD && deltaDist > 0){
+    /*if (ultraSonicSensorDistance() < 15){
       stop();
-    }
-  }
+    }*/
+  //}
   movementTimerCheck();
   encodersCheck();
       

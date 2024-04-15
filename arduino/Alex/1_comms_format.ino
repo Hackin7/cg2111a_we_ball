@@ -36,6 +36,12 @@ void sendStatus()
   statusPacket.params[7] = rightReverseTicksTurns;
   statusPacket.params[8] = forwardDist;
   statusPacket.params[9] = reverseDist;
+  // Stuff
+  statusPacket.params[10] = redFrequency;
+  statusPacket.params[11] = blueFrequency;
+  statusPacket.params[12] = greenFrequency;
+  statusPacket.params[13] = (uint32_t)ultDuration;
+  // Packet up till 15
   sendResponse(&statusPacket);
 
 }
@@ -52,15 +58,6 @@ void colourStatus()
 	colourPacket.params[4] = greenFrequency;
 	colourPacket.params[5] = greenColor;
 	// insert dbprintf //
-/*	sendResponse(&colourPacket);
-	  Serial.print(" G = ");
-  Serial.print(greenColor);
-	  Serial.print(" B = ");
-  Serial.print(blueColor);
-  delay(100);
-	  Serial.print("R = ");
-  Serial.print(redColor);
-	*/
 	dbprintf("Red frequency: %d, Red Colour: %d\n", redFrequency, redColor);
 	dbprintf("Blue frequency: %d, Blue Colour: %d\n", blueFrequency, blueColor);
 	dbprintf("Green frequency: %d, Green Colour: %d\n", greenFrequency, greenColor);
@@ -180,13 +177,16 @@ void handleCommand(TPacket *command)
         break;
     case COMMAND_GET_STATS:
         sendOK();
+        
+        colourSense();
+  	    ultrasonicSensor();
         sendStatus();
+        
         //sendOK();
         //break;
         //case COMMAND_GET_COLOUR:
-  	    colourSense();
-  	    colourStatus();
-        ultrasonicSensor();
+  	    //colourStatus();
+        
         break;
     case COMMAND_CLEAR_STATS:
         sendOK();
