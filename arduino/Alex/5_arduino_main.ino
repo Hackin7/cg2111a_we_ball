@@ -126,7 +126,7 @@ void loop() {
   }
 
   if(dir==FORWARD && enableUltrasonic){
-    if (ultraSonicSensorDistance() < 13){
+    if (ultraSonicSensorDistance() < 17){
       stop();
       enableUltrasonic = false;
     }

@@ -57,6 +57,14 @@ void colourSense() {
   lcd.setCursor(0, 1);  
   lcd.print("B="+String(blueFrequency));
 
+  if (redFrequency < greenFrequency && redFrequency < blueFrequency) {
+    dbprintf("red");
+  }else if (greenFrequency < redFrequency && redFrequency > blueFrequency) {
+    dbprintf("green");
+  } else {
+    dbprintf("white");
+  }
+
   // Checks the current detected color and prints
   // a message in the serial monitor
 
