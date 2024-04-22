@@ -62,6 +62,11 @@ void handleStatus(const char *buffer)
 	printf("Right Reverse Ticks Turns:\t%d\n", data[7]);
 	printf("Forward Distance:\t\t%d\n", data[8]);
 	printf("Reverse Distance:\t\t%d\n", data[9]);
+	printf("---------------------------------------\n\n");
+	printf("Red Frequency:\t\t%d\n", data[10]);
+	printf("Green Frequency:\t%d\n", data[11]);
+	printf("Blue Frequency:\t\t%d\n", data[12]);
+	printf("Ultrasonic:\t\t%d %f\n", data[13], (double)data[13] * 0.034/2);
 	printf("\n---------------------------------------\n\n");
 }
 
@@ -221,6 +226,7 @@ void approxAngle(void *conn, char ch){
 	int32_t speed=0;
 	printf("Enter approx angle + speed\n");
 	scanf("%d %d", &angle, &speed);
+	flushInput();
 
 	move(conn, ch, angleConversion(speed, angle)+1000, speed); // + 1000 to use timer logic
 }
@@ -231,6 +237,7 @@ void distanceMove(void *conn, char ch){
 	printf("Enter approx dist + speed\n");
 	scanf("%d %d", &dist, &speed);
 	move(conn, ch, dist, speed); // + 1000 to use timer logic
+	flushInput();
 }
 
 
@@ -259,7 +266,7 @@ void *keyboardControlThread(void *conn) {
     newTermios.c_lflag &= ~ECHO;
     tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
 
-	int speeds[4] = {50, 50, 50, 50};
+	int speeds[4] = {40, 40, 50, 50};
 	bool exit=false;
 	char ch;
 
@@ -324,6 +331,7 @@ void *keyboardControlThread(void *conn) {
 				printf("Key in new speeds f_b_l_r:\n");
 				printf("Current Speeds: f=%d b=%d l=%d r=%d\n", speeds[0], speeds[1], speeds[2], speeds[3]);
 				scanf("%d %d %d %d", &speeds[0], &speeds[1], &speeds[2], &speeds[3]);
+				flushInput();
     			tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
                 break;
 			// Kills ///////////////////////////////////////////////////////

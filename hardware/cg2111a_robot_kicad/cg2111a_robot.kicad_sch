@@ -1381,6 +1381,10 @@
     (effects (font (face "Consolas") (size 5 5) bold) (justify left bottom))
     (uuid 4336100f-fa4b-4924-8625-801c1e2f4952)
   )
+  (text "Extra Ultrasonic Port \nthat was not used\n" (at 223.52 67.31 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 733007fc-47ba-40e3-b902-d3e019ef7af1)
+  )
   (text "Motor Shield connected to the Arduino\nMotors are connected to the Shield"
     (at 26.67 34.29 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
