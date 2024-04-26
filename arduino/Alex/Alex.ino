@@ -79,6 +79,7 @@ char _recvBuffer, _xmitBuffer;
 
 volatile long ultDuration = -1;
 volatile long ultDist = -1;
+volatile int colourEnum = 0;
 
 /* --------------------------------------------------------------------------------*/
 // This function needs to be here if not it'll throw an error

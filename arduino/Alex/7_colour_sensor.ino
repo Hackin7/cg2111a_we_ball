@@ -58,10 +58,13 @@ void colourSense() {
   lcd.print("B="+String(blueFrequency));
 
   if (redFrequency < greenFrequency && redFrequency < blueFrequency) {
+    colourEnum = 1;
     dbprintf("red");
   }else if (greenFrequency < redFrequency && redFrequency > blueFrequency) {
+    colourEnum = 2;
     dbprintf("green");
   } else {
+    colourEnum = 3;
     dbprintf("white");
   }
 

@@ -41,6 +41,7 @@ void sendStatus()
   statusPacket.params[11] = blueFrequency;
   statusPacket.params[12] = greenFrequency;
   statusPacket.params[13] = (uint32_t)ultDuration;
+  statusPacket.params[14] = (uint32_t)colourEnum;
   // Packet up till 15
   sendResponse(&statusPacket);
 

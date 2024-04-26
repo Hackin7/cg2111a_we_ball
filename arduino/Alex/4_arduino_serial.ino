@@ -21,10 +21,14 @@ void startSerial()
 // This will be replaced later with bare-metal code.
 
 
+volatile int counts = 0 ;
+
 int readSerial(char *buffer)
 {
 
-  int count=readSerialLib(buffer);
+  
+  //int count = readUART(buffer); 
+  int count = readSerialLib(buffer);
   
   // LCD Code
   if (count > 0) {
@@ -102,9 +106,7 @@ void writeSerialLib(const char *buffer, int len)
 // https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/ATmega640-1280-1281-2560-2561-Datasheet-DS40002211A.pdf
 
 
-volatile char buffer[1024];
-volatile int counts = 0 ;
-
+volatile char globalBuffer[1024];
 
 
 
@@ -127,14 +129,15 @@ void setupUART()
 void startUART()
 {
   UCSR0B = 0b10111000;
+  //UCSR0B = 0b10011000;
+  //UCSR0B = 0b00011000; // Doesnt work
 }
 
 // Actual Interrupts //
 // RECIEVE COMPLETE //
 ISR(USART0_RXC){
-  //buffer[counts++] = UDR0;
-  //if (counts >= 1024){ counts = 0; };
-  
+  globalBuffer[counts++] = UDR0;
+  if (counts >= 1024){ counts = 0; };
 }
 
 // TRANSFER COMPLETE //
@@ -147,7 +150,6 @@ ISR(USART0_UDRE){
 
 }
 
-
 void writeUART( const char *buffer, int len){
   for ( int i = 0 ; i < len ; i ++ ){
     while ( !(UCSR0A & (1<< UDRE0))){}
@@ -156,18 +158,45 @@ void writeUART( const char *buffer, int len){
 }
 
 /*
-void readUART(char *buffer){
+int readUART(char *buffer)
+{
+  if (counts > 0) {
+    buffer[0] = globalBuffer[0];
+    return 1;
+  }else{
+    return 0;
+  }
+  
   int count = 0;
-  TResult result;
-  do {
-    result = readBuffer(&_recvBuffer, &buffer[count]);
-    if (result == BUFFER_OK){
-      count++;
-    }
-  } while (result == BUFFER_OK);
+
+  for (count = 0; count < counts; count += 1) { //read in the data sequentially
+    buffer[count] = globalBuffer[count];
+  }
+
+  counts = 0;
   return count;
 }
-*?
+*/
+
+
+int readUART(char *buffer){
+  int count=0;
+  
+  for (int i=0; i<128; i++){
+    while((UCSR0A & (1 << RXC0)) == 0){}
+    buffer[count++] = UDR0;
+  } 
+  //UDR0;
+  
+  /*lcd.setCursor(0,1);
+  lcd.print(111);
+  lcd.print(i);
+  lcd.print(111);*/
+  return count;
+}
+
+/*
+
 /* --- Sending Data ------------------------------------*/
 /*
 #define UDRIEMASK   0b00100000
