@@ -179,10 +179,10 @@ int readUART(char *buffer)
 */
 
 
-int readUART(char *buffer){
+int readUART1(char *buffer){
   int count=0;
   
-  for (int i=0; i<128; i++){
+  for (int i=0; i<101; i++){
     while((UCSR0A & (1 << RXC0)) == 0){}
     buffer[count++] = UDR0;
   } 
@@ -192,6 +192,16 @@ int readUART(char *buffer){
   lcd.print(111);
   lcd.print(i);
   lcd.print(111);*/
+  return count;
+}
+
+
+int readUART(char *buffer)
+{
+  int count = 0;
+  while (UCSR0A & (1 << RXC0)) {
+    buffer[count++] = UDR0;
+  }
   return count;
 }
 
