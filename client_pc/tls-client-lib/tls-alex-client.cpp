@@ -67,6 +67,7 @@ void handleStatus(const char *buffer)
 	printf("Green Frequency:\t%d\n", data[11]);
 	printf("Blue Frequency:\t\t%d\n", data[12]);
 	printf("Ultrasonic:\t\t%d %f\n", data[13], (double)data[13] * 0.034/2);
+	printf("Colour Enum\t\t%d\n", data[14]);
 	printf("\n---------------------------------------\n\n");
 }
 
