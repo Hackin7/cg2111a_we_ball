@@ -1,6 +1,17 @@
 # cg2111a_we_ball
 
-our robot will move as smoothly as a ball
+our robot will move as smoothly as a ball. Code here is modified from the template code with our various additions. More information about those additions can be found in our reports in `reports/`
+
+# `main` branch
+
+## PC - Client Code
+
+Code found in `client_pc/tls-client-lib`. Compile using `compile.sh` and run `tls-alex-client <IP> <PORT>`.
+
+
+# `main-rpi` branch
+
+Repository should be put in `/home/pi/Documents/cg2111a_we_ball/`
 
 ## Arduino - Firmware Code
 
@@ -21,9 +32,8 @@ Alex.ino
 
 To get it to compile make sure to import `serialize.zip` as an arduino library first.
 
+The compile and upload script for the firmware is in `arduino/upload.sh`
+
 ## RPi - Server Code
 
-
-## PC - Client Code
-
-
+Can run  `server_rpi/start.sh`
